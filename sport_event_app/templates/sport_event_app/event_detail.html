@@ -1,0 +1,30 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block header %}
+    {% include './block/header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <hr>
+            <img class="img-fluid rounded " src="{{ sport_event.image.url }}" alt="">
+            <hr>
+            <p class="lead">
+            {{ sport_event.description|safe }}
+            </p>
+            <hr>
+<!--            <p class="lead text-right">Автор: {{ sport_event.author }}</p>-->
+            <hr>
+<!--            <p class="text-right">Опубликовано {{ sport_event.created_at }}</p>-->
+            <hr>
+            {% include './block/comments.html' %}
+        </div>
+        {% include './block/aside.html' %}
+    </div>
+</div>
+</div>
+{% endblock %}

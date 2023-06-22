@@ -1,0 +1,55 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+        <form class="form-signin" method="post" action="{% url 'signup' %}">
+            {% csrf_token %}
+            <h1 class="h3 mb-3 mt-3 font-weight-normal">Для регистрации укажите email, номер телефона и пароль</h1>
+            <div>
+                <label for="inputEmail" class="sr-only">Email</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label for="inputNumber" class="sr-only">Номер телефона</label>
+                {{ form.phone_number }}
+            </div>
+            <div>
+                <label for="inputSurname" class="sr-only">Фамилия</label>
+                {{ form.surname }}
+            </div>
+            <div>
+                <label for="inputName" class="sr-only">Имя</label>
+                {{ form.name }}
+            </div>
+            <div>
+                <label for="inputMiddleName" class="sr-only">Отчество</label>
+                {{ form.middle_name }}
+            </div>
+            <div>
+                <label for="inputPassword" class="sr-only">Пароль</label>
+                {{ form.password }}
+            </div>
+            <div>
+                <label for="ReInputPassword" class="sr-only">Повторите пароль</label>
+                {{ form.repeat_password }}
+            </div>
+            <button class="btn mt-2 btn-lg btn-primary btn-block" type="submit">Регистрация</button>
+        </form>
+    </div>
+{% endblock %}

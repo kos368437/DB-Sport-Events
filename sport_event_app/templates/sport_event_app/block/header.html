@@ -1,0 +1,19 @@
+{% load static %}
+<div class="container-fluid home-slider">
+    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active" style="background-color: #343a40!important">
+                <img src="{{ sport_event.image.url }}" class="d-block w-100" alt="" style="opacity:0.4;filter:alpha(opacity=40);">
+                <div class="carousel-caption d-none d-md-block">
+                    <h1>
+                        {% if sport_event.title %}
+                            {{ sport_event.title }}
+                        {% else %}
+                            {{ title }}
+                        {% endif %}
+                    </h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
