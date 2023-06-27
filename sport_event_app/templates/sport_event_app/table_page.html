@@ -1,0 +1,43 @@
+{% extends "./base.html" %}
+
+{% load render_table from django_tables2 %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+    {% block content %}
+    {% if user.is_superuser %}
+        {# Progress indicator #}
+        <div class="progress">
+            <div class="indeterminate"></div>
+        </div>
+        <div class="text-center">
+            {% if form.errors %}
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <div class="alert alert-danger">
+                            <strong>{{ error|escape }}</strong>
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        <form class="form-signin" method="get" action="{% url 'query_table' %}">
+                {{ form.query }}
+                <button class="btn mt-2 btn-lg btn-primary btn-block" type="submit">Запустить запрос</button>
+        </form>
+
+        {% if not form.errors %}
+            {% if has_qs %}
+                <small> {{message}} </small>
+            {% endif %}
+            {# The actual table #}
+            {% render_table table %}
+        {% endif %}
+{% endif %}
+    {% endblock %}
+

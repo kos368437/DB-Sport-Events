@@ -1,0 +1,97 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Расширенный поиск событий{% endblock %}
+
+{% block content %}
+    <div class="container">
+      <h1 class="my-3">Расширенный поиск событий</h1>
+      <form id='search_form' class="form-signin align-items-baseline" method="get" action="{% url 'event_search' %}">
+          <div class="d-flex flex-row align-items-center">
+              <div class="flex-column align-items-start" style="padding: 0px 10px 0px 0px">
+                  <small>Поиск</small>
+                  {{ form.search_field }}
+              </div>
+              <div class="d-flex flex-column" style="padding: 0px 10px 0px 10px">
+                  <small>Цена</small>
+                  <div class="d-flex flex-row">
+                      <div style="padding: 0px 10px 0px 0px">
+                        {{ form.min_price }}
+                      </div>
+                    {{ form.max_price }}
+                  </div>
+              </div>
+               <div class="d-flex flex-column" style="padding: 0px 10px 0px 10px">
+                  <small>Место проведения</small>
+                   {{form.location}}
+              </div>
+              <div class="flex-column" style="padding: 0px 10px 0px 10px">
+                  <small>Дата проведения</small>
+                  <div class="d-flex flex-row">
+                    <div style="padding: 0px 10px 0px 0px">
+                        {{ form.from_date }}
+                    </div>
+                    {{ form.to_date }}
+                  </div>
+              </div>
+              <div class="flex-column" style="padding: 0px 10px 0px 10px">
+                   <div class="d-flex flex-row">
+                       <label class="form-check-label" for="inputHaveSeats">
+                            Есть места
+                       </label>
+                       {{ form.have_seats }}
+                  </div>
+              </div>
+              <div class="flex-column" style="padding: 0px 0px 0px 10px">
+                <button class="btn mt-2 btn-lg btn-primary btn-block" type="submit">Найти</button>
+              </div>
+          </div>
+        </form>
+      <ul class="list-group">
+        {% for event in page_obj %}
+          <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+            <div class="flex-column">
+              <h5 class="mb-1">{{ event.title }}</h5>
+              <small>{{event.announce_text}}</small>
+              <p><small>{{event.location.name}}</small></p>
+            </div>
+            <div class="flex-column">
+               <p>{{event.event_date}}</p>
+              <div class="d-flex justify-content-between">
+                <span class="badge badge-info badge-pill">{{event.price}}₽</span>
+                <small>{{event.total_seats}}/{{event.ticket_number}}</small>
+              </div>
+            </div>
+          </a>
+        {% endfor %}
+      </ul>
+
+{% endblock %}
+
+{% block pagination %}
+    <nav aria-label="Paginate me">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Предыдущая</a>
+        {% else %}
+        <li class="page-item disabled">
+          <button class="page-link disabled" form='search_form' name="page" type="submit" tabindex="-1">Предыдущая</button>
+        </li>
+        {% endif %}
+        {% for i in page_obj.paginator.page_range %}
+        {% if i == page_obj.number %}
+          <li class="page-item active"><button class="page-link" >{{ i }}</button></li>
+        {% else %}
+          <li class="page-item"><button class="page-link" name="page" form='search_form' type="submit" value="{{i}}">{{ i }}</button></li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <button class="page-link"  form='search_form' name="page" type="submit" value="{{page_obj.next_page_number}}">Следующая</button>
+        {% else %}
+          <li class="page-item disabled">
+            <button class="page-link" >Следующая</button>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+</div>
+{% endblock %}

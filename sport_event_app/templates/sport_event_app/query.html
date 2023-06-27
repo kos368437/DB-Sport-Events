@@ -1,0 +1,32 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Песочница запросов{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+
+        <form class="form-signin" method="post" action="{% url 'query_table' %}">
+            {% csrf_token %}
+            {{ form.query }}
+            {% if has_qs %}
+                <div class="row">
+                    {% for col in columns %}
+                        <div class="col-sm">
+                            {{ col }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% for row in rows %}
+                    <div class="row">
+                        {% for item in row %}
+                            <div class="col-sm">
+                                {{ item }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+            {% endif %}
+            <button class="btn mt-2 btn-lg btn-primary btn-block" type="submit">Запустить запрос</button>
+        </form>
+    </div>
+{% endblock %}

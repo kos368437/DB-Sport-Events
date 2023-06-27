@@ -1,7 +1,12 @@
+import datetime
+import math
+
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db import transaction
+
+from .models import Location, SportEvent
 
 
 class SignUpForm(forms.Form):
@@ -91,7 +96,6 @@ class SignUpForm(forms.Form):
                 "Пароли не совпадают"
             )
 
-
     def save(self):
         user = User.objects.create_user(
             username=self.cleaned_data['email'],
@@ -104,14 +108,15 @@ class SignUpForm(forms.Form):
         user.profile.middle_name = self.cleaned_data['middle_name']
 
         user.save()
-        auth = authenticate(**self.cleaned_data)
-        return auth
+        # auth = authenticate(**self.cleaned_data)
+        return user
+
 
 class SignInForm(forms.Form):
-    email = forms.EmailField(
+    email = forms.CharField(
         max_length=100,
         required=True,
-        widget=forms.EmailInput(attrs={
+        widget=forms.TextInput(attrs={
             'class': "form-control",
             'id': "inputEmail",
             'placeholder': "Email",
@@ -125,3 +130,75 @@ class SignInForm(forms.Form):
             'placeholder': "Пароль",
         })
     )
+
+
+class QueryForm(forms.Form):
+    query = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': "form-control mt-2",
+            'id': "inputQuery",
+            'placeholder': "Введите запрос",
+        })
+    )
+
+class EventSearchForm(forms.Form):
+    search_field = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputSearch',
+
+        })
+    )
+    min_price = forms.IntegerField(
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputMinPrice',
+            'placeholder': 'от 0',
+        })
+    )
+    max_price = forms.IntegerField(
+        required=False,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputMaxPrice',
+            'placeholder': 'до ∞',
+        })
+    )
+    location = forms.ModelChoiceField(
+        required=False,
+        queryset=Location.objects.all().order_by('name'),
+        widget=forms.Select(
+            attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputLocation',
+        }),
+        # choices=Location.objects.all().order_by().values('name').distinct().values('id', 'name')
+        # choices=[(elem['id'], elem['name']) for elem in Location.objects.all().values('id', 'name')]
+    )
+    from_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputFromDate',
+            'placeholder': 'с'
+        })
+    )
+    to_date = forms.DateField(
+        required=False,
+        widget=forms.DateInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputFromDate',
+            'placeholder': 'по'
+        })
+    )
+    have_seats = forms.ChoiceField(
+        required=False,
+        widget=forms.CheckboxInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputHaveSeats',
+        })
+    )
+

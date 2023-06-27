@@ -1,0 +1,54 @@
+{% extends "django_tables2/bootstrap4.html" %}
+
+{% load django_tables2 %}
+{% load i18n %}
+
+{% block table.thead %}
+  {% if table.show_header %}
+      <thead {{ table.attrs.thead.as_html }}>
+      <tr>
+          {% for column in table.columns %}
+              <th {{ column.attrs.th.as_html }}
+                  hx-get="{% querystring table.prefixed_order_by_field=column.order_by_alias.next %}"
+                  hx-trigger="click"
+                  hx-target="div.table-container"
+                  hx-swap="outerHTML"
+                  hx-indicator=".progress"
+                  style="cursor: pointer;">
+                  {{ column.header|safe|truncatechars:20 }}
+              </th>
+          {% endfor %}
+      </tr>
+      </thead>
+  {% endif %}
+{% endblock table.thead %}
+
+{% block pagination.range %}
+    <nav aria-label="Paginate me">
+      <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+          <a class="page-link" href="?page={{ page_obj.previous_page_number }}" tabindex="-1">Предыдущая</a>
+        {% else %}
+        <li class="page-item disabled">
+          <a class="page-link disabled" href="#" tabindex="-1">Предыдущая</a>
+        </li>
+        {% endif %}
+        {% for i in page_obj.paginator.page_range %}
+        {% if i == page_obj.number %}
+          <li class="page-item active"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        {% else %}
+          <li class="page-item"><a class="page-link" href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if page_obj.has_next %}
+          <a class="page-link" href="?page={{ page_obj.next_page_number }}">Следующая</a>
+        {% else %}
+          <li class="page-item disabled">
+            <a class="page-link" href="#">Следующая</a>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+    <br>
+{% endblock %}
+
