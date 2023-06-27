@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "django_tables2",
     "crispy_forms",
     "crispy_bootstrap4",
+    'mathfilters',
     'sport_event_app',
 ]
 

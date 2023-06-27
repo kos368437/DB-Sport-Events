@@ -35,8 +35,16 @@ class MainView(View):
 class EventDetailView(View):
     def get(self, request, slug, *args, **kwargs):
         event = get_object_or_404(SportEvent, url=slug)
+        # u_id = event.id
+        # event = SportEvent.get_events().get(id=u_id)
+        # event = SportEvent.objects.get(id=u_id)
+        total_seats = event.get_total_seats_count()
+        print(event)
+        upcoming_events = SportEvent.get_upcoming_events().exclude(id=event.id)[:5]
         return render(request, 'sport_event_app/event_detail.html', context={
-            'sport_event': event
+            'sport_event': event,
+            'upcoming_events': upcoming_events,
+            'total_seats': total_seats
         })
 
 
@@ -191,7 +199,9 @@ class QueryTableView(View):
 class EventSearchView(View):
     def get(self, request, *args, **kwargs):
         form = EventSearchForm(request.GET)
-        events = SportEvent.objects.select_related('location').prefetch_related('reservation')
+        # events = SportEvent.objects.select_related('location').prefetch_related('reservation')
+
+        events = SportEvent.get_upcoming_events()
 
         from_date = request.GET.get('from_date')
         to_date = request.GET.get('to_date')
@@ -201,14 +211,14 @@ class EventSearchView(View):
         max_price = request.GET.get('max_price')
         search_field = request.GET.get('search_field')
 
-        events = events.values('title').order_by('title') \
-            .annotate(total_seats=Sum('reservation__seats_count')) \
-            .annotate(total_seats=F('ticket_number') - F('total_seats')) \
-            .annotate(total_seats=Case(
-            When(total_seats=None, then=F('ticket_number')),
-            default=F('total_seats'), output_field=PositiveIntegerField()
-        )).values('title', 'price', 'location__name', 'announce_text', 'total_seats', 'event_date', 'ticket_number')\
-            .filter(event_date__gte=timezone.now())
+        # events = events.values('title').order_by('title') \
+        #     .annotate(total_seats=Sum('reservation__seats_count')) \
+        #     .annotate(total_seats=F('ticket_number') - F('total_seats')) \
+        #     .annotate(total_seats=Case(
+        #     When(total_seats=None, then=F('ticket_number')),
+        #     default=F('total_seats'), output_field=PositiveIntegerField()
+        # )).values('title', 'price', 'location__name', 'announce_text', 'total_seats', 'event_date', 'ticket_number')\
+        #     .filter(event_date__gte=timezone.now())
 
         if from_date and from_date != '':
             events = events.filter(event_date__gte=datetime.datetime.strptime(from_date, "%d-%m-%Y").date())

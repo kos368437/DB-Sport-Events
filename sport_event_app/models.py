@@ -1,3 +1,4 @@
+from django.db.models import PositiveIntegerField, Case, F, Sum, When
 from django.utils.translation import gettext_lazy as _
 from django.db import models
 from django.contrib.auth.models import User
@@ -35,7 +36,7 @@ class Coach(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True)
     specialization = models.CharField(max_length=140, default='Тренер')
     description = models.TextField(max_length=280, default='')
-    image = models.ImageField(null=True)
+    image = models.ImageField(null=True, default='media/coach_default.png')
     def __str__(self):
         return str(self.profile) + ': ' + str(self.specialization)
 
@@ -68,6 +69,32 @@ class SportEvent(models.Model):
 
     def __str__(self):
         return self.title
+
+    @staticmethod
+    def get_events():
+        events = SportEvent.objects.all().select_related('location').select_related('coach').prefetch_related('reservation')
+        events = events.values('title').order_by('title') \
+                     .annotate(total_seats=Sum('reservation__seats_count')) \
+                     .annotate(total_seats=F('ticket_number') - F('total_seats')) \
+                     .annotate(total_seats=Case(
+            When(total_seats=None, then=F('ticket_number')),
+            default=F('total_seats'), output_field=PositiveIntegerField()
+        )).values()
+        return events
+    def get_total_seats_count(self):
+        events = SportEvent.objects.all().select_related('location').select_related('coach').prefetch_related('reservation').filter(id=self.id)
+        total_seats = events.values('title').order_by('title') \
+            .annotate(total_seats=Sum('reservation__seats_count')) \
+            .annotate(total_seats=F('ticket_number') - F('total_seats')) \
+            .annotate(total_seats=Case(
+            When(total_seats=None, then=F('ticket_number')),
+            default=F('total_seats'), output_field=PositiveIntegerField()
+        )).values('total_seats').first()
+        return total_seats['total_seats']
+    @staticmethod
+    def get_upcoming_events():
+        events = SportEvent.get_events().filter(event_date__gte=timezone.now())
+        return events
 
 
 class ReservationStatusChoice(models.TextChoices):

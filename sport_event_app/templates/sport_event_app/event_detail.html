@@ -1,5 +1,6 @@
 {% extends './base.html' %}
 {% load static %}
+{% load mathfilters %}
 {% block title %}{{ post.title }}{% endblock %}
 
 {% block header %}
@@ -12,19 +13,51 @@
         <div class="col-lg-8">
             <hr>
             <img class="img-fluid rounded " src="{{ sport_event.image.url }}" alt="">
+            <br>
+            <br>
+            <div class="d-flex flex-row justify-content-between">
+                <div class="lead">
+                    {{sport_event.location.name}}
+                </div>
+                <div class="lead">
+                    {{sport_event.event_date}}
+                </div>
+            </div>
             <hr>
-            <p class="lead">
-            {{ sport_event.description|safe }}
-            </p>
+            <p class="lead"><b>Тренер</b>: {{sport_event.coach.profile.surname}} {{sport_event.coach.profile.name}}<br>{{sport_event.coach.specialization}}</p>
             <hr>
-<!--            <p class="lead text-right">Автор: {{ sport_event.author }}</p>-->
+            <div class="d-flex flex-column">
+                <p class="lead">
+                    {{ sport_event.description|safe }}
+                </p>
+                <br>
+                <div class="d-flex justify-content-end">
+                    <h6>
+                        Длительность: {{sport_event.duration}}
+                    </h6>
+                </div>
+            </div>
             <hr>
-<!--            <p class="text-right">Опубликовано {{ sport_event.created_at }}</p>-->
+            <div class="d-flex flex-row justify-content-between">
+                <div class="d-flex flex-column">
+                    <progress value="{{total_seats  | mul:100 | intdiv:sport_event.ticket_number}}" max="100"></progress>
+                    <div class="d-flex flex-row">
+                        В наличии {{total_seats}} из {{sport_event.ticket_number}} мест
+                    </div>
+                    <h3>{{sport_event.price}}₽</h3>
+                </div>
+                <div class="d-flex flex-column">
+                    <form class="form-signin align-items-baseline">
+                        <input type="number"> Field
+                    </form>
+                </div>
+                <div class="d-flex flex-column">
+                    <button class="btn mt-2 btn-lg btn-primary btn-block" type="submit">Забронировать</button>
+                </div>
+            </div>
             <hr>
-            {% include './block/comments.html' %}
         </div>
         {% include './block/aside.html' %}
     </div>
-</div>
 </div>
 {% endblock %}
