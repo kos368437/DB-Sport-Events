@@ -1,0 +1,54 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Бронирование{% endblock %}
+
+{% block content %}
+ {% if form.errors %}
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <div class="alert alert-danger">
+                    <strong>{{ error|escape }}</strong>
+                </div>
+            {% endfor %}
+        {% endif %}
+    <br>
+    <div class="container">
+      <ul class="list-group">
+          <div class="list-group-item">
+              <div class="d-flex flex-row justify-content-between align-items-center">
+                  <div class="flex-column">
+                    <h5 class="mb-1">{{ event.title }}</h5>
+                    <small>{{event.announce_text}}</small>
+                    <p><small>{{event.location.name}}</small></p>
+                  </div>
+                 <div class="flex-column">
+                     <p>{{event.event_date}}</p>
+                    <div class="d-flex justify-content-between">
+                        <span class="badge badge-info badge-pill">{{event.price}}₽</span>
+                        <small>{{event.get_total_seats_count}}/{{event.ticket_number}}</small>
+                    </div>
+                 </div>
+              </div>
+              <div class="d-flex flex-row justify-content-center align-items-center">
+                  Количество мест:
+                  <div class="d-flex flex-column" style="padding: 10px">
+                      <form id='SeatsForm' class="form-signin" method="post" action="{% url 'reservation' slug=event.url %}">
+                          {%csrf_token%}
+                          {{form.reserved_seats}}
+                          {{form.available_seats}}
+                      </form>
+                  </div>
+                  <div class="d-flex flex-column">
+                    <button class="btn mt-2 btn-lg btn-primary btn-block" form="SeatsForm" type="submit">Забронировать</button>
+                  </div>
+              </div>
+          </div>
+      </ul>
+    </div>
+{% endblock %}

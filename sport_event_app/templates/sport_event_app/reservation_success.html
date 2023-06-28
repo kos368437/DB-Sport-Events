@@ -1,0 +1,17 @@
+{% extends './base.html' %}
+{% load static %}
+{% block title %}Бронирование{% endblock %}
+
+{% block content %}
+    <div style="height: 80%;
+      width: 100%;
+      display: flex;
+      position: fixed;
+      align-items: center;
+      justify-content: center;">
+        <div class="d-flex flex-column justify-content-center align-items-center">
+            <h5> Заявка успешно создана. В течение дня вам на почту придёт подтверждение от администратора.</h5>
+            <a href="{% url 'index'%}">Вернуться на главную</a>
+        </div>
+    </div>
+{% endblock %}

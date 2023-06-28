@@ -1,0 +1,14 @@
+{% extends './header.html' %}
+{% block carousel%}
+<img src="{{ sport_event.image.url }}" class="d-block w-100" alt="" style="opacity:0.4;filter:alpha(opacity=40);">
+<div class="carousel-caption d-none d-md-block">
+    <h1>
+        {% if sport_event.title %}
+            {{ sport_event.title }}
+        {% else %}
+            {{ title }}
+        {% endif %}
+    </h1>
+    <p>{{ sport_event.event_date }}</p>
+</div>
+{% endblock %}

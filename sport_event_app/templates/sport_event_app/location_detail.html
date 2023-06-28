@@ -1,0 +1,28 @@
+{% extends './base.html' %}
+{% load static %}
+{% load mathfilters %}
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block header %}
+    {% include './block/location_header.html' %}
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <hr>
+            <img class="img-fluid rounded " src="{{ location.image.url }}" alt=""><hr>
+            <h6 class="text-muted">О компании:</h6>
+                {{location.description|safe}}
+            <hr>
+            <h6 class="text-muted">Адрес:</h6>
+            <div class="d-flex flex-column">
+                {{location.address}}
+            </div>
+            <img class="img-fluid rounded " src="https://static-maps.yandex.ru/1.x/?size=600,330&z=16&scale=1&l=map&pt={{location.lon}},{{location.lat}},pm2orl&lang=ru_RU" alt="">
+
+        </div>
+    </div>
+</div>
+{% endblock %}

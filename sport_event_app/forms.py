@@ -6,11 +6,10 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db import transaction
 
-from .models import Location, SportEvent
+from .models import Location, SportEvent, Reservation, ReservationStatusChoice
 
 
 class SignUpForm(forms.Form):
-
     phone_number = forms.CharField(
         required=True,
         label="Номер телефона",
@@ -142,6 +141,7 @@ class QueryForm(forms.Form):
         })
     )
 
+
 class EventSearchForm(forms.Form):
     search_field = forms.CharField(
         required=False,
@@ -172,9 +172,9 @@ class EventSearchForm(forms.Form):
         queryset=Location.objects.all().order_by('name'),
         widget=forms.Select(
             attrs={
-            'class': 'form-control mt-2',
-            'id': 'inputLocation',
-        }),
+                'class': 'form-control mt-2',
+                'id': 'inputLocation',
+            }),
         # choices=Location.objects.all().order_by().values('name').distinct().values('id', 'name')
         # choices=[(elem['id'], elem['name']) for elem in Location.objects.all().values('id', 'name')]
     )
@@ -183,18 +183,20 @@ class EventSearchForm(forms.Form):
         widget=forms.DateInput(attrs={
             'class': 'form-control mt-2',
             'id': 'inputFromDate',
-            'placeholder': 'с'
-        })
+            'placeholder': 'с',
+        }),
+        input_formats=['%d-%m-%Y']
     )
     to_date = forms.DateField(
         required=False,
-        widget=forms.DateInput(attrs={
+        widget=forms.widgets.DateInput(attrs={
             'class': 'form-control mt-2',
-            'id': 'inputFromDate',
-            'placeholder': 'по'
-        })
+            'id': 'inputToDate',
+            'placeholder': 'по',
+        }),
+        input_formats = ['%d-%m-%Y']
     )
-    have_seats = forms.ChoiceField(
+    have_seats = forms.BooleanField(
         required=False,
         widget=forms.CheckboxInput(attrs={
             'class': 'form-control mt-2',
@@ -202,3 +204,39 @@ class EventSearchForm(forms.Form):
         })
     )
 
+
+class ReservationForm(forms.Form):
+    reserved_seats = forms.IntegerField(
+        min_value=1,
+        required=True,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control mt-2',
+            'id': 'inputReservedSeats',
+        })
+    )
+    available_seats = forms.IntegerField(
+        required=False,
+        widget=forms.HiddenInput(attrs={
+            'id': 'inputAvailableSeats'
+        })
+    )
+
+    def clean(self):
+        reserved_seats = self.cleaned_data['reserved_seats']
+        available_seats = self.available_seats
+
+        if reserved_seats <= 0:
+            raise forms.ValidationError(
+                "Количество бронируемых мест должно быть больше нуля"
+            )
+        if reserved_seats > available_seats:
+            raise forms.ValidationError(
+                "Количество бронируемых мест должно быть меньше либо равно количеству доступных"
+            )
+
+    def save(self, event, user):
+        reserved_seats = self.cleaned_data['reserved_seats']
+        reservation = Reservation.objects.create(seats_count=reserved_seats, profile=user.profile,
+                                                 event=event, status=ReservationStatusChoice.REGISTERED)
+        reservation.save()
+        return reservation

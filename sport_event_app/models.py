@@ -36,19 +36,23 @@ class Coach(models.Model):
     profile = models.OneToOneField(Profile, on_delete=models.CASCADE, null=True)
     specialization = models.CharField(max_length=140, default='Тренер')
     description = models.TextField(max_length=280, default='')
-    image = models.ImageField(null=True, default='media/coach_default.png')
+    image = models.ImageField(null=True, default='coach_default.png')
     def __str__(self):
         return str(self.profile) + ': ' + str(self.specialization)
 
 
 class Location(models.Model):
-    name = models.CharField(max_length=200, default='')
-    location_address = models.TextField(max_length=280, default='')
-    max_seats = models.PositiveIntegerField(default=0)
-    default_price = models.PositiveIntegerField(default=0)
-    default_duration = models.DurationField(default='01:00:00')
-    default_seats_count = models.PositiveIntegerField(default=0)
-    default_coach = models.ForeignKey(Coach, on_delete=models.DO_NOTHING, null=True)
+    name = models.CharField(max_length=200)
+    address = models.TextField(max_length=280, blank=True)
+    description = models.TextField(max_length=500, default='', blank=True)
+    max_seats = models.PositiveIntegerField(default=0, blank=True)
+    image = models.ImageField(blank=True, null=True, default='location_default.jpeg')
+    lon = models.CharField(blank=True, null=True, max_length=20, default='83.088801')
+    lat = models.CharField(blank=True, null=True, max_length=20, default='54.843243')
+    default_price = models.PositiveIntegerField(default=0, blank=True)
+    default_duration = models.DurationField(default='01:00:00', blank=True)
+    default_seats_count = models.PositiveIntegerField(default=0, blank=True)
+    default_coach = models.ForeignKey(Coach, on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self):
         return str(self.name)

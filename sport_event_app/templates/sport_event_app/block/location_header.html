@@ -1,0 +1,13 @@
+{% extends './header.html' %}
+{% block carousel%}
+<img src="{{ location.image.url }}" class="d-block w-100" alt="" style="opacity:0.4;filter:alpha(opacity=40);">
+<div class="carousel-caption d-none d-md-block">
+    <h1>
+        {% if location.name %}
+            {{ location.name }}
+        {% else %}
+            {{ title }}
+        {% endif %}
+    </h1
+</div>
+{% endblock %}
